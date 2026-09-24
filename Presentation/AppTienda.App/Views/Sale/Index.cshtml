@@ -1,0 +1,115 @@
+@model List<SaleDto>
+@{
+    ViewData["Title"] = "Historial de Ventas";
+    var totalRevenue = Model.Sum(s => s.TotalAmount);
+    var totalProfit = Model.Sum(s => s.Profit);
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <div>
+        <h3 class="fw-bold mb-0 text-dark" style="color: var(--color-wine);">Historial de Ventas</h3>
+        <small class="text-muted">Registro de ventas realizadas, fecha y ganancia obtenida</small>
+    </div>
+    <a asp-action="Create" class="btn btn-wine shadow-sm">
+        <i class="bi bi-plus-lg me-1"></i> Registrar Venta
+    </a>
+</div>
+
+<!-- Summary Mini Row -->
+<div class="row g-3 mb-3">
+    <div class="col-6 col-md-4">
+        <div class="card-custom py-2 px-3">
+            <small class="text-muted d-block fw-bold">Total Facturado</small>
+            <h5 class="fw-extrabold my-1" style="color: var(--color-wine);">$@totalRevenue.ToString("N2")</h5>
+        </div>
+    </div>
+    <div class="col-6 col-md-4">
+        <div class="card-custom py-2 px-3">
+            <small class="text-muted d-block fw-bold">Ganancia Total</small>
+            <h5 class="fw-extrabold text-success my-1">+$@totalProfit.ToString("N2")</h5>
+        </div>
+    </div>
+    <div class="col-12 col-md-4">
+        <div class="card-custom py-2 px-3">
+            <small class="text-muted d-block fw-bold">Cantidad de Ventas</small>
+            <h5 class="fw-extrabold text-dark my-1">@Model.Count ventas (@Model.Sum(s => s.Quantity) uds)</h5>
+        </div>
+    </div>
+</div>
+
+<div class="card-custom p-0 overflow-hidden">
+    @if (Model.Any())
+    {
+        <div class="table-responsive">
+            <table class="table-mocha">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha</th>
+                        <th>Producto</th>
+                        <th>Cant.</th>
+                        <th>Total Venta</th>
+                        <th>Ganancia</th>
+                        <th>Pago</th>
+                        <th class="text-end">Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var s in Model)
+                    {
+                        <tr>
+                            <td class="fw-semibold text-muted small">#@s.Id.ToString("D4")</td>
+                            <td class="small">@s.SaleDate.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>
+                                <div class="fw-bold text-dark">@s.ProductName</div>
+                                <small class="text-muted">@s.CategoryName @(string.IsNullOrEmpty(s.CustomerName) ? "" : $"• Cliente: {s.CustomerName}")</small>
+                            </td>
+                            <td><span class="badge badge-mocha">@s.Quantity</span></td>
+                            <td class="fw-bold text-dark">$@s.TotalAmount.ToString("N2")</td>
+                            <td>
+                                <span class="badge @(s.Profit >= 0 ? "badge-green" : "badge-red")">
+                                    +$@s.Profit.ToString("N2")
+                                </span>
+                            </td>
+                            <td><span class="badge bg-light text-dark border">@s.PaymentMethod</span></td>
+                            <td class="text-end">
+                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#cancel-@s.Id" title="Anular venta">
+                                    <i class="bi bi-x-circle"></i>
+                                </button>
+
+                                <div class="modal fade" id="cancel-@s.Id" tabindex="-1">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content border-0 shadow">
+                                            <div class="modal-header border-bottom-0">
+                                                <h5 class="modal-title fw-bold text-danger">Anular Venta</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body text-start">
+                                                ¿Anular la venta de <strong>@s.Quantity unidad(es) de @s.ProductName</strong> por <strong>$@s.TotalAmount.ToString("N2")</strong>?
+                                                <p class="small text-muted mt-2">La cantidad vendida se repondrá automáticamente al stock del producto.</p>
+                                            </div>
+                                            <div class="modal-footer border-top-0">
+                                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
+                                                <form asp-action="Cancel" asp-route-id="@s.Id" method="post">
+                                                    <button type="submit" class="btn btn-danger fw-bold">Confirmar Anulación</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5 text-muted">
+            <i class="bi bi-cart-x fs-1 mb-2 d-block"></i>
+            <p class="mb-2">No hay ventas registradas.</p>
+            <a asp-action="Create" class="btn btn-wine btn-sm">Registrar Venta</a>
+        </div>
+    }
+</div>

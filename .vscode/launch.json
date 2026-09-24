@@ -1,0 +1,26 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": ".NET Core Launch (web)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/Presentation/AppTienda.App/bin/Debug/net9.0/AppTienda.App.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/Presentation/AppTienda.App",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openUrl",
+                "action": "openUrl",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceFolder}/Presentation/AppTienda.App/Views"
+            }
+        }
+    ]
+}

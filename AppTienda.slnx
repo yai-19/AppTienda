@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/Core/">
+    <Project Path="Core/AppTienda.Core.Application/AppTienda.Core.Application.csproj" />
+    <Project Path="Core/AppTienda.Core.Domain/AppTienda.Core.Domain.csproj" />
+  </Folder>
+  <Folder Name="/Infrastructure/">
+    <Project Path="Infrastructure/AppTienda.Infrastructure.Persistence/AppTienda.Infrastructure.Persistence.csproj" />
+    <Project Path="Infrastructure/AppTienda.Infrastructure.Shared/AppTienda.Infrastructure.Shared.csproj" />
+  </Folder>
+  <Folder Name="/Presentation/">
+    <Project Path="Presentation/AppTienda.App/AppTienda.App.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,96 @@
+@model List<ExpenseDto>
+@{
+    ViewData["Title"] = "Gastos";
+    var totalExpenses = Model.Sum(e => e.Amount);
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <div>
+        <h3 class="fw-bold mb-0 text-dark" style="color: var(--color-wine);">Control de Gastos</h3>
+        <small class="text-muted">Alquiler, servicios, transporte, fletes y otros egresos</small>
+    </div>
+    <a asp-action="Create" class="btn btn-wine shadow-sm">
+        <i class="bi bi-plus-lg me-1"></i> Registrar Gasto
+    </a>
+</div>
+
+<!-- Total Expenses Bar -->
+<div class="card-custom p-3 mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div>
+        <span class="text-muted small fw-bold text-uppercase d-block">Monto Total de Gastos</span>
+        <h4 class="fw-extrabold text-danger my-0">$@totalExpenses.ToString("N2")</h4>
+    </div>
+    <div>
+        <span class="badge badge-mocha fs-6">@Model.Count transacciones</span>
+    </div>
+</div>
+
+<div class="card-custom p-0 overflow-hidden">
+    @if (Model.Any())
+    {
+        <div class="table-responsive">
+            <table class="table-mocha">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Categoría</th>
+                        <th>Descripción</th>
+                        <th>Monto</th>
+                        <th>Notas</th>
+                        <th class="text-end">Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var e in Model)
+                    {
+                        <tr>
+                            <td class="small">@e.ExpenseDate.ToString("dd/MM/yyyy")</td>
+                            <td><span class="badge badge-mocha">@e.Category</span></td>
+                            <td class="fw-bold text-dark">@e.Description</td>
+                            <td class="fw-bold text-danger">-$@e.Amount.ToString("N2")</td>
+                            <td class="text-muted small">@(string.IsNullOrEmpty(e.Notes) ? "-" : e.Notes)</td>
+                            <td class="text-end">
+                                <div class="btn-group">
+                                    <a asp-action="Edit" asp-route-id="@e.Id" class="btn btn-sm btn-outline-secondary" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#delExp-@e.Id" title="Eliminar">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+
+                                <div class="modal fade" id="delExp-@e.Id" tabindex="-1">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content border-0 shadow">
+                                            <div class="modal-header border-bottom-0">
+                                                <h5 class="modal-title fw-bold text-danger">Eliminar Gasto</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body text-start">
+                                                ¿Eliminar el gasto <strong>@e.Description</strong> ($@e.Amount.ToString("N2"))?
+                                            </div>
+                                            <div class="modal-footer border-top-0">
+                                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                                                <form asp-action="Delete" asp-route-id="@e.Id" method="post">
+                                                    <button type="submit" class="btn btn-danger fw-bold">Eliminar</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5 text-muted">
+            <i class="bi bi-receipt fs-1 mb-2 d-block"></i>
+            <p class="mb-2">No hay gastos registrados.</p>
+            <a asp-action="Create" class="btn btn-wine btn-sm">Registrar Gasto</a>
+        </div>
+    }
+</div>

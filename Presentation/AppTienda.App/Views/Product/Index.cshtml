@@ -1,0 +1,142 @@
+@model List<ProductDto>
+@{
+    ViewData["Title"] = "Productos";
+    var categories = ViewBag.Categories as SelectList;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <div>
+        <h3 class="fw-bold mb-0 text-dark" style="color: var(--color-wine);">Mis Productos</h3>
+        <small class="text-muted">Inventario, precios de costo, venta y ganancias esperadas</small>
+    </div>
+    <a asp-action="Create" class="btn btn-wine shadow-sm">
+        <i class="bi bi-plus-lg me-1"></i> Nuevo Producto
+    </a>
+</div>
+
+<!-- Search & Category Filters -->
+<div class="card-custom p-3 mb-3">
+    <form method="get" asp-action="Index" class="row g-2 align-items-center">
+        <div class="col-12 col-md-6">
+            <div class="input-group">
+                <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                <input type="text" name="searchTerm" value="@ViewBag.SearchTerm" class="form-control border-start-0" placeholder="Buscar producto..." />
+            </div>
+        </div>
+        <div class="col-8 col-md-4">
+            <select name="categoryId" class="form-select" asp-items="categories">
+                <option value="">-- Todas las Categorías --</option>
+            </select>
+        </div>
+        <div class="col-4 col-md-2">
+            <button type="submit" class="btn btn-mocha w-100 fw-bold">Buscar</button>
+        </div>
+    </form>
+</div>
+
+<!-- Products Table -->
+<div class="card-custom p-0 overflow-hidden">
+    @if (Model.Any())
+    {
+        <div class="table-responsive">
+            <table class="table-mocha">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Categoría</th>
+                        <th>Costo Compra</th>
+                        <th>Precio Venta</th>
+                        <th>Ganancia Estimada</th>
+                        <th>Stock</th>
+                        <th class="text-end">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    @if (!string.IsNullOrEmpty(p.ImageUrl))
+                                    {
+                                        <img src="@p.ImageUrl" alt="@p.Name" class="rounded border" style="width: 40px; height: 40px; object-fit: cover;" />
+                                    }
+                                    <div>
+                                        <div class="fw-bold text-dark">@p.Name</div>
+                                        <small class="text-muted">SKU: @(string.IsNullOrEmpty(p.Sku) ? "-" : p.Sku)</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="badge badge-mocha">@p.CategoryName</span></td>
+                            <td class="text-muted">$@p.PurchasePrice.ToString("N2")</td>
+                            <td class="fw-bold text-dark">$@p.SalePrice.ToString("N2")</td>
+                            <td>
+                                <span class="badge badge-green">+$@p.EstimatedUnitProfit.ToString("N2")</span>
+                                <small class="text-muted d-block font-monospace">(@p.EstimatedMarginPercentage.ToString("N0")%)</small>
+                            </td>
+                            <td>
+                                @if (p.Stock == 0)
+                                {
+                                    <span class="badge badge-red">Agotado</span>
+                                }
+                                else if (p.Stock <= 3)
+                                {
+                                    <span class="badge badge-mocha">@p.Stock uds (Bajo)</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-green">@p.Stock uds</span>
+                                }
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group">
+                                    @if (p.Stock > 0 && p.Status == ProductStatus.Disponible)
+                                    {
+                                        <a asp-controller="Sale" asp-action="Create" asp-route-productId="@p.Id" class="btn btn-sm btn-mocha" title="Vender">
+                                            <i class="bi bi-cart-plus"></i>
+                                        </a>
+                                    }
+                                    <a asp-action="Edit" asp-route-id="@p.Id" class="btn btn-sm btn-outline-secondary" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#del-@p.Id" title="Eliminar">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+
+                                <!-- Modal Delete -->
+                                <div class="modal fade" id="del-@p.Id" tabindex="-1">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content border-0 shadow">
+                                            <div class="modal-header border-bottom-0">
+                                                <h5 class="modal-title fw-bold text-danger">Eliminar Producto</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body text-start">
+                                                ¿Seguro que deseas eliminar <strong>@p.Name</strong>?
+                                            </div>
+                                            <div class="modal-footer border-top-0">
+                                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                                                <form asp-action="Delete" asp-route-id="@p.Id" method="post">
+                                                    <button type="submit" class="btn btn-danger fw-bold">Eliminar</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5 text-muted">
+            <i class="bi bi-box2 fs-1 mb-2 d-block"></i>
+            <p class="mb-2">No hay productos disponibles.</p>
+            <a asp-action="Create" class="btn btn-wine btn-sm">Agregar Producto</a>
+        </div>
+    }
+</div>

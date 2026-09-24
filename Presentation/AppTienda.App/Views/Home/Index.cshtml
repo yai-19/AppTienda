@@ -1,0 +1,202 @@
+@model FinanceSummaryDto
+@{
+    ViewData["Title"] = "Dashboard";
+    var lowStockProducts = ViewBag.LowStockProducts as List<ProductDto> ?? new List<ProductDto>();
+}
+
+<!-- Top Burgundy Banner with Filter Pills -->
+<div class="banner-wine mb-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div>
+        <h4 class="fw-bold mb-0 text-white" style="font-size: 1.3rem;">Gestión de Tienda: Resumen General</h4>
+    </div>
+    <div class="d-flex align-items-center gap-1 flex-wrap">
+        <a asp-action="Index" asp-route-filterType="@DateFilterType.Hoy" class="filter-pill @(Model.StartDate.Date == DateTime.Now.Date && Model.EndDate.Date == DateTime.Now.Date ? "active" : "")">Hoy</a>
+        <a asp-action="Index" asp-route-filterType="@DateFilterType.EstaSemana" class="filter-pill">Semana</a>
+        <a asp-action="Index" asp-route-filterType="@DateFilterType.EsteMes" class="filter-pill @(Model.StartDate.Day == 1 && Model.StartDate.Month == DateTime.Now.Month ? "active" : "")">Mes</a>
+        <a asp-action="Index" asp-route-filterType="@DateFilterType.EsteAno" class="filter-pill">Año</a>
+        <a asp-action="Index" asp-route-filterType="@DateFilterType.Historico" class="filter-pill">Todo</a>
+    </div>
+</div>
+
+<!-- 3 KPI Cards exactly like screenshot -->
+<div class="row g-3 mb-4">
+    <!-- Card 1: Ventas Totales -->
+    <div class="col-12 col-md-4">
+        <div class="card-stat-white h-100">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="stat-title">Ventas Totales</span>
+                <span class="badge badge-mocha"><i class="bi bi-arrow-up-right me-1"></i>@Model.TotalSalesCount ventas</span>
+            </div>
+            <div class="stat-value">$@Model.TotalSalesRevenue.ToString("N2")</div>
+            <div class="small text-muted mt-2">
+                @Model.TotalItemsSold unidades vendidas en este período
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 2: Gastos Operativos (Filled Mocha style from image) -->
+    <div class="col-12 col-md-4">
+        <div class="card-stat-mocha filled h-100">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="stat-title text-white">Gastos Operativos</span>
+                <span class="badge bg-white text-dark"><i class="bi bi-receipt me-1"></i>@Model.TotalExpensesCount registros</span>
+            </div>
+            <div class="stat-value text-white">$@Model.TotalExpenses.ToString("N2")</div>
+            <div class="small text-white-50 mt-2">
+                Alquiler, servicios, fletes y otros gastos
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 3: Ganancia Neta -->
+    <div class="col-12 col-md-4">
+        <div class="card-stat-white h-100">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="stat-title">Ganancia Neta</span>
+                <span class="badge @(Model.NetProfit >= 0 ? "badge-green" : "badge-red")">
+                    Margen: @Model.ProfitMarginPercentage%
+                </span>
+            </div>
+            <div class="stat-value @(Model.NetProfit >= 0 ? "text-success" : "text-danger")">
+                $@Model.NetProfit.ToString("N2")
+            </div>
+            <div class="small text-muted mt-2">
+                Ingresos (-) Costos (-) Gastos operativos
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Content Grid: Ventas Recientes & Gastos / Stock -->
+<div class="row g-4">
+    <!-- Ventas Recientes (Table styled like screenshot) -->
+    <div class="col-12 col-lg-7">
+        <div class="card-custom h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0 text-dark" style="color: var(--color-wine);">
+                    <i class="bi bi-clock-history me-2"></i>Ventas Recientes
+                </h5>
+                <a asp-controller="Sale" asp-action="Index" class="btn btn-outline-mocha btn-sm">Ver todas</a>
+            </div>
+
+            @if (Model.Sales.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table-mocha">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Producto</th>
+                                <th>Categoría</th>
+                                <th>Precio Venta</th>
+                                <th>Ganancia</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var s in Model.Sales.Take(8))
+                            {
+                                <tr>
+                                    <td class="fw-semibold text-muted small">#@s.Id.ToString("D4")</td>
+                                    <td>
+                                        <div class="fw-bold text-dark">@s.ProductName</div>
+                                        <small class="text-muted">@s.Quantity unidad(es)</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-mocha">@s.CategoryName</span>
+                                    </td>
+                                    <td class="fw-bold text-dark">$@s.TotalAmount.ToString("N2")</td>
+                                    <td>
+                                        <span class="badge @(s.Profit >= 0 ? "badge-green" : "badge-red")">
+                                            +$@s.Profit.ToString("N2")
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5 text-muted">
+                    <i class="bi bi-cart-x fs-1 mb-2 d-block text-muted"></i>
+                    <p class="mb-2">No se han registrado ventas en este período.</p>
+                    <a asp-controller="Sale" asp-action="Create" class="btn btn-wine btn-sm">Registrar Venta</a>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Right Column: Gastos Recientes & Resumen de Inventario -->
+    <div class="col-12 col-lg-5">
+        <!-- Gastos Recientes -->
+        <div class="card-custom mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0 text-dark" style="color: var(--color-wine);">
+                    <i class="bi bi-receipt me-2"></i>Últimos Gastos
+                </h5>
+                <a asp-controller="Expense" asp-action="Index" class="btn btn-outline-mocha btn-sm">Ver todos</a>
+            </div>
+
+            @if (Model.Expenses.Any())
+            {
+                <div class="list-group list-group-flush">
+                    @foreach (var e in Model.Expenses.Take(5))
+                    {
+                        <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center bg-transparent border-bottom">
+                            <div>
+                                <div class="fw-bold text-dark">@e.Description</div>
+                                <small class="text-muted">@e.ExpenseDate.ToString("dd/MM/yyyy") &bull; <span class="badge badge-mocha">@e.Category</span></small>
+                            </div>
+                            <div class="text-end">
+                                <span class="fw-bold text-danger fs-6">-$@e.Amount.ToString("N2")</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-3 text-muted small">
+                    No hay gastos registrados en este período.
+                </div>
+            }
+        </div>
+
+        <!-- Stock Bajo Alertas -->
+        <div class="card-custom">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0 text-dark" style="color: var(--color-wine);">
+                    <i class="bi bi-exclamation-circle me-2"></i>Alerta de Stock
+                </h5>
+                <a asp-controller="Product" asp-action="Index" class="btn btn-outline-mocha btn-sm">Inventario</a>
+            </div>
+
+            @if (lowStockProducts.Any())
+            {
+                <div class="list-group list-group-flush">
+                    @foreach (var p in lowStockProducts)
+                    {
+                        <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center bg-transparent border-bottom">
+                            <div>
+                                <div class="fw-bold text-dark">@p.Name</div>
+                                <small class="text-muted">@p.CategoryName</small>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge @(p.Stock == 0 ? "badge-red" : "badge-mocha")">
+                                    @(p.Stock == 0 ? "Agotado" : $"{p.Stock} uds.")
+                                </span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-3 text-muted small">
+                    <i class="bi bi-check-circle text-success me-1"></i> Stock en niveles correctos.
+                </div>
+            }
+        </div>
+    </div>
+</div>

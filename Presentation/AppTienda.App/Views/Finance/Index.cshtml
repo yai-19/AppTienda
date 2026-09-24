@@ -1,0 +1,114 @@
+@model FinanceSummaryDto
+@{
+    ViewData["Title"] = "Finanzas y Ganancias";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <div>
+        <h3 class="fw-bold mb-0 text-dark" style="color: var(--color-wine);">Finanzas & Ganancias</h3>
+        <small class="text-muted">Cálculo de ingresos, costo de compra, gastos y ganancia neta</small>
+    </div>
+    <div class="d-flex gap-2">
+        <button onclick="window.print()" class="btn btn-outline-mocha btn-sm">
+            <i class="bi bi-printer me-1"></i> Imprimir
+        </button>
+    </div>
+</div>
+
+<!-- Filter Pills -->
+<div class="banner-wine mb-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div class="fw-bold">
+        Período: <span class="text-white">@Model.FilterTitle</span>
+    </div>
+    <div class="d-flex align-items-center gap-1 flex-wrap">
+        <a asp-action="Index" asp-route-filterType="@DateFilterType.Hoy" class="filter-pill @(ViewBag.CurrentFilter == DateFilterType.Hoy ? "active" : "")">Hoy</a>
+        <a asp-action="Index" asp-route-filterType="@DateFilterType.EstaSemana" class="filter-pill @(ViewBag.CurrentFilter == DateFilterType.EstaSemana ? "active" : "")">Semana</a>
+        <a asp-action="Index" asp-route-filterType="@DateFilterType.EsteMes" class="filter-pill @(ViewBag.CurrentFilter == DateFilterType.EsteMes ? "active" : "")">Mes</a>
+        <a asp-action="Index" asp-route-filterType="@DateFilterType.EsteAno" class="filter-pill @(ViewBag.CurrentFilter == DateFilterType.EsteAno ? "active" : "")">Año</a>
+        <a asp-action="Index" asp-route-filterType="@DateFilterType.Historico" class="filter-pill @(ViewBag.CurrentFilter == DateFilterType.Historico ? "active" : "")">Todo</a>
+    </div>
+</div>
+
+<!-- 4 Financial Pillars -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+        <div class="card-custom p-3">
+            <small class="text-muted d-block fw-bold text-uppercase">(+) Ventas Totales</small>
+            <h4 class="fw-extrabold my-1" style="color: var(--color-wine);">$@Model.TotalSalesRevenue.ToString("N2")</h4>
+            <small class="text-muted">@Model.TotalItemsSold unidades</small>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card-custom p-3">
+            <small class="text-muted d-block fw-bold text-uppercase">(-) Costo Mercancía</small>
+            <h4 class="fw-extrabold my-1" style="color: var(--color-mocha);">$@Model.TotalCostOfGoodsSold.ToString("N2")</h4>
+            <small class="text-muted">Inversión en productos</small>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card-custom p-3">
+            <small class="text-muted d-block fw-bold text-uppercase">(=) Ganancia Bruta</small>
+            <h4 class="fw-extrabold my-1 text-dark">$@Model.GrossProfit.ToString("N2")</h4>
+            <small class="text-muted">Ventas menos costo</small>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card-custom p-3">
+            <small class="text-muted d-block fw-bold text-uppercase">(-) Gastos Operativos</small>
+            <h4 class="fw-extrabold my-1 text-danger">$@Model.TotalExpenses.ToString("N2")</h4>
+            <small class="text-muted">@Model.TotalExpensesCount registros</small>
+        </div>
+    </div>
+</div>
+
+<!-- Net Profit Highlight Box -->
+<div class="card-custom p-4 mb-4 text-center" style="background-color: var(--color-warm-light); border: 2px solid var(--color-mocha);">
+    <span class="text-muted small fw-bold text-uppercase d-block mb-1">Resultado Final: Ganancia Neta</span>
+    <h1 class="fw-extrabold mb-2 @(Model.NetProfit >= 0 ? "text-success" : "text-danger")" style="font-size: 2.5rem;">
+        $@Model.NetProfit.ToString("N2")
+    </h1>
+    <span class="badge @(Model.NetProfit >= 0 ? "badge-green" : "badge-red") fs-6 px-3 py-2">
+        Rentabilidad: @Model.ProfitMarginPercentage%
+    </span>
+</div>
+
+<!-- Top Selling Products Simple Table -->
+<div class="card-custom p-0 overflow-hidden">
+    <div class="p-3 border-bottom">
+        <h5 class="fw-bold mb-0 text-dark" style="color: var(--color-wine);">
+            <i class="bi bi-trophy me-2"></i>Productos Más Vendidos y Rentables
+        </h5>
+    </div>
+    @if (Model.TopSellingProducts.Any())
+    {
+        <div class="table-responsive">
+            <table class="table-mocha">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Uds. Vendidas</th>
+                        <th>Total Recaudado</th>
+                        <th>Ganancia Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in Model.TopSellingProducts)
+                    {
+                        <tr>
+                            <td class="fw-bold text-dark">@p.ProductName</td>
+                            <td><span class="badge badge-mocha">@p.TotalSold</span></td>
+                            <td class="fw-bold text-dark">$@p.TotalRevenue.ToString("N2")</td>
+                            <td><span class="badge badge-green">+$@p.TotalProfit.ToString("N2")</span></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-4 text-muted small">
+            No hay datos de ventas en este período.
+        </div>
+    }
+</div>

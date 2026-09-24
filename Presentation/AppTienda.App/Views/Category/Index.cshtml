@@ -1,0 +1,86 @@
+@model List<CategoryDto>
+@{
+    ViewData["Title"] = "Categorías";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <div>
+        <h3 class="fw-bold mb-0 text-dark" style="color: var(--color-wine);">Categorías</h3>
+        <small class="text-muted">Organiza tus productos por tipo o sección</small>
+    </div>
+    <a asp-action="Create" class="btn btn-wine shadow-sm">
+        <i class="bi bi-plus-lg me-1"></i> Nueva Categoría
+    </a>
+</div>
+
+<div class="card-custom p-0 overflow-hidden">
+    @if (Model.Any())
+    {
+        <div class="table-responsive">
+            <table class="table-mocha">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Total Productos</th>
+                        <th class="text-end">Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var c in Model)
+                    {
+                        <tr>
+                            <td class="fw-bold text-dark">@c.Name</td>
+                            <td class="text-muted">@(string.IsNullOrEmpty(c.Description) ? "-" : c.Description)</td>
+                            <td><span class="badge badge-mocha">@c.ProductsCount productos</span></td>
+                            <td class="text-end">
+                                <div class="btn-group">
+                                    <a asp-action="Edit" asp-route-id="@c.Id" class="btn btn-sm btn-outline-secondary" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#delCat-@c.Id" title="Eliminar">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+
+                                <div class="modal fade" id="delCat-@c.Id" tabindex="-1">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content border-0 shadow">
+                                            <div class="modal-header border-bottom-0">
+                                                <h5 class="modal-title fw-bold text-danger">Eliminar Categoría</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body text-start">
+                                                ¿Eliminar la categoría <strong>@c.Name</strong>?
+                                                @if (c.ProductsCount > 0)
+                                                {
+                                                    <div class="alert alert-warning mt-2 small">
+                                                        Tiene @c.ProductsCount productos asignados.
+                                                    </div>
+                                                }
+                                            </div>
+                                            <div class="modal-footer border-top-0">
+                                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                                                <form asp-action="Delete" asp-route-id="@c.Id" method="post">
+                                                    <button type="submit" class="btn btn-danger fw-bold" @(c.ProductsCount > 0 ? "disabled" : "")>Eliminar</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5 text-muted">
+            <i class="bi bi-tags fs-1 mb-2 d-block"></i>
+            <p class="mb-2">No hay categorías creadas.</p>
+            <a asp-action="Create" class="btn btn-wine btn-sm">Crear Categoría</a>
+        </div>
+    }
+</div>
