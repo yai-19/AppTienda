@@ -1,4 +1,4 @@
-# 🛍️ AppTienda - Sistema de Gestión de Tienda y Finanzas
+#  AppTienda - Sistema de Gestión de Tienda y Finanzas
 
 **AppTienda** es una aplicación web intuitiva, moderna y adaptada a dispositivos móviles diseñada para gestionar el inventario de productos, registrar ventas en tiempo real con cálculo automático de ganancias y llevar el control contable de gastos operativos.
 
@@ -6,25 +6,25 @@ El proyecto está desarrollado en **ASP.NET Core MVC (.NET 9)** siguiendo los pr
 
 ---
 
-## 🎨 Características Principales
+## Características Principales
 
-- **📦 Gestión de Productos**:
+- **Gestión de Productos**:
   - Registro de productos con nombre, descripción, código SKU, categoría y foto.
   - Registro del **Precio de Compra (Costo)** y **Precio de Venta Sugerido**.
   - Control de inventario en tiempo real (Stock disponible, estados: *Disponible*, *Vendido*, *Agotado*).
   - Cálculo instantáneo de ganancia estimada y margen de rentabilidad por unidad.
 
-- **🛒 Registro Rápido de Ventas**:
+- **Registro Rápido de Ventas**:
   - Registro de ventas indicando fecha/hora y el precio real al que se vendió.
   - Cálculo automático de la ganancia neta por venta:
     $$\text{Ganancia} = (\text{Precio de Venta} - \text{Precio de Costo}) \times \text{Cantidad}$$
   - Descuento automático de stock en bodega.
   - Opción de anulación de venta que reintegra el stock automáticamente.
 
-- **💸 Control de Gastos Operativos**:
+- **Control de Gastos Operativos**:
   - Registro de salidas de dinero clasificadas por categoría (Alquiler, Servicios, Transporte/Fletes, Publicidad, Nómina, Suministros, etc.).
 
-- **📊 Balance Financiero y Ganancia Neta Real**:
+- **Balance Financiero y Ganancia Neta Real**:
   - **Ingresos por Ventas**
   - **(-) Costo de Mercancía Vendida (COGS)**
   - **(=) Ganancia Bruta**
@@ -32,14 +32,14 @@ El proyecto está desarrollado en **ASP.NET Core MVC (.NET 9)** siguiendo los pr
   - **(=) Ganancia Neta Real y % de Rentabilidad**
   - Filtros directos por período: **Hoy**, **Esta Semana**, **Este Mes**, **Este Año**, **Histórico Total** o **Rango Personalizado**.
 
-- **📱 Diseño Optimizado para Celulares (*Mobile-First*)**:
+- **Diseño Optimizado para Celulares (*Mobile-First*)**:
   - Barra de navegación inferior (*Bottom Bar*) para navegación cómoda con una mano.
   - Botón de acceso rápido central para registrar ventas en un toque.
   - Paleta de colores cálida y elegante en tonos **Vino/Borgoña**, **Café/Mocha** y **Crema**, sin gráficos innecesarios para una carga ultrarrápida.
 
 ---
 
-## 🏗️ Arquitectura del Proyecto
+## Arquitectura del Proyecto
 
 El proyecto está dividido en 5 capas desacopladas:
 
@@ -85,14 +85,14 @@ AppTienda/
 
 ---
 
-## 🚀 Requisitos Previos
+## Requisitos Previos
 
 - [.NET 9.0 SDK](https://dotnet.microsoft.com/download/dotnet/9.0) o superior.
 - **Visual Studio 2022** (versión 17.12+) o **Visual Studio Code** con la extensión de C#.
 
 ---
 
-## 💻 Instrucciones de Instalación y Ejecución
+## Instrucciones de Instalación y Ejecución
 
 ### Opción A: Desde Visual Studio
 1. Abre **Visual Studio**.
@@ -123,7 +123,7 @@ AppTienda/
 
 ---
 
-## 📲 Cómo Usar la App desde tu Celular
+## Cómo Usar la App desde tu Celular
 
 Puedes abrir y usar la aplicación directamente desde el navegador de tu teléfono móvil conectado a la misma red Wi-Fi:
 
@@ -141,24 +141,14 @@ Puedes abrir y usar la aplicación directamente desde el navegador de tu teléfo
 
 ---
 
-## 🗄️ Base de Datos
+## Base de Datos
 
 La aplicación viene configurada por defecto con **SQLite** (`AppTienda.db`), lo que permite que funcione de inmediato sin necesidad de instalar ni configurar servidores de bases de datos.
 
-Si deseas utilizar **SQL Server**, puedes cambiar la configuración en `Presentation/AppTienda.App/appsettings.json`:
-
-```json
-{
-  "DatabaseProvider": "SqlServer",
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=.;Database=AppTiendaDb;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true"
-  }
-}
-```
 
 ---
 
-## 🛠️ Tecnologías Utilizadas
+## Tecnologías Utilizadas
 
 - **C# / .NET 9**
 - **ASP.NET Core MVC**
